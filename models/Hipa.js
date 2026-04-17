@@ -2,13 +2,63 @@ import mongoose from "mongoose";
 
 const hipaSchema = new mongoose.Schema(
   {
-    _id: String,
-    customer_id: String,
-    status: String,
-    coverageScore: Number,
-    gaps: Array,
-    recommendations: Array,
-    reportUrl: String,
+    // 🔥 CHANGE 1: string ID instead of ObjectId
+    _id: {
+      type: String,
+      required: true,
+    },
+
+    // 🔥 CHANGE 2: all IDs as STRING (NOT ObjectId)
+    customer_id: {
+      type: String,
+      required: false,
+    },
+
+    venture_id: {
+      type: String,
+      required: true,
+    },
+
+    agent_id: {
+      type: String,
+    },
+
+    input_type: {
+      type: String,
+      enum: ["camera", "pdf", "manual"],
+      required: true,
+    },
+
+    status: {
+      type: String,
+      enum: ["processing", "complete", "failed"],
+      default: "processing",
+    },
+
+    coverage_score: Number,
+
+    gaps: [
+      {
+        severity: String,
+        title: String,
+        description: String,
+        riskLabel: String,
+      },
+    ],
+
+    recommendations: [
+      {
+        title: String,
+        description: String,
+        premiumIncrement: Number,
+      },
+    ],
+
+    total_recommended_premium: Number,
+
+    report_url: String,
+
+    createdAt: { type: Date, default: Date.now },
   },
   { timestamps: true },
 );

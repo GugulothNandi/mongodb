@@ -1,44 +1,87 @@
 import Deal from "../models/Deal.js";
 import { v4 as uuidv4 } from "uuid";
 
+// CREATE DEAL
 export const createDeal = async (req, res) => {
-  const dealId = "HS-" + Date.now();
+  try {
+    const {
+      deal_name,
+      customer_id,
+      agent_id,
+      venture_id,
+      channel_id,
+      stage,
+      amount,
+      priority,
+      source,
+      product_interest,
+      hipa_id,
+      notes,
+    } = req.body;
 
-  const deal = await Deal.create({
-    dealId,
-    contactName: req.body.contactName,
-    contactPhone: req.body.contactPhone,
-    hipaId: req.body.hipaId,
-    productInterest: req.body.productInterest,
-    amount: req.body.dealAmount,
-    stage: req.body.pipelineStage,
-    priority: req.body.priority,
-    source: req.body.source,
-    hubspotDealId: "mock_" + uuidv4(),
-  });
+    const deal = await Deal.create({
+      deal_id: "HS-" + uuidv4().slice(0, 8),
+      deal_name,
+      customer_id,
+      agent_id,
+      venture_id,
+      channel_id,
+      stage,
+      amount,
+      priority,
+      source,
+      product_interest,
+      hipa_id,
+      notes,
+      timeline: [
+        {
+          event: "Deal Created",
+          actor: "RM",
+        },
+      ],
+    });
 
-  res.status(201).json({
-    dealId,
-    hubspotDealId: deal.hubspotDealId,
-    pipeline: "Health Insurance",
-    stage: deal.stage,
-    hipaReportAttached: true,
-    createdAt: deal.createdAt,
-  });
+    res.status(201).json({
+      message: "Deal created successfully",
+      deal,
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+    });
+  }
 };
 
+// GET ALL DEALS
 export const getDeals = async (req, res) => {
-  const deals = await Deal.find();
+  try {
+    const { stage } = req.query;
 
-  res.json({
-    deals: deals.map((d) => ({
-      dealId: d.dealId,
-      contactName: d.contactName,
-      amount: d.amount,
-      stage: d.stage,
-      priority: d.priority,
-    })),
-    totalPipelineValue: deals.reduce((sum, d) => sum + d.amount, 0),
-    nextCursor: null,
-  });
+    let filter = {};
+    if (stage) filter.stage = stage;
+
+    const deals = await Deal.find(filter).sort({ createdAt: -1 });
+
+    res.status(200).json({
+      deals,
+      total: deals.length,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// GET SINGLE DEAL
+export const getDealById = async (req, res) => {
+  try {
+    const deal = await Deal.findOne({ deal_id: req.params.id });
+
+    if (!deal) {
+      return res.status(404).json({ message: "Deal not found" });
+    }
+
+    res.status(200).json(deal);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
