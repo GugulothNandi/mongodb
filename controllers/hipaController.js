@@ -1,24 +1,18 @@
 import Hipa from "../models/Hipa.js";
 import { v4 as uuidv4 } from "uuid";
 
-/**
- * POST /api/hipa/analyse
- */
 export const analyseHipa = async (req, res) => {
   try {
-    // 🔥 CHANGE 3: generate string ID
     const hipaId = "hipa_" + uuidv4();
 
     const { customer_id, venture_id, input_type } = req.body;
 
-    // 🔥 CHANGE 4: validation (snake_case)
     if (!venture_id || !input_type) {
       return res.status(400).json({
         error: "input_type and venture_id are required",
       });
     }
 
-    // 🔥 CREATE record
     await Hipa.create({
       _id: hipaId,
       customer_id,
@@ -33,7 +27,6 @@ export const analyseHipa = async (req, res) => {
       estimatedSeconds: 5,
     });
 
-    // 🔥 MOCK processing delay
     setTimeout(async () => {
       await Hipa.findByIdAndUpdate(hipaId, {
         status: "complete",

@@ -114,16 +114,9 @@ const dealSchema = new mongoose.Schema(
   },
 );
 
-/*
-ONLY KEEP NON-DUPLICATE INDEXES
-*/
-
-// keep these
 dealSchema.index({ agent_id: 1, stage: 1 });
 dealSchema.index({ customer_id: 1 });
 dealSchema.index({ venture_id: 1, stage: 1 });
-
-// ❌ DO NOT repeat deal_id index here (REMOVE IT)
 
 const Deal = mongoose.model("Deal", dealSchema);
 

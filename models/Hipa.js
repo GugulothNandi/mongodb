@@ -2,13 +2,11 @@ import mongoose from "mongoose";
 
 const hipaSchema = new mongoose.Schema(
   {
-    // 🔥 CHANGE 1: string ID instead of ObjectId
     _id: {
       type: String,
       required: true,
     },
 
-    // 🔥 CHANGE 2: all IDs as STRING (NOT ObjectId)
     customer_id: {
       type: String,
       required: false,
